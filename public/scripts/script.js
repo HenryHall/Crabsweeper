@@ -109,14 +109,10 @@ crabApp.controller('crabSettings', ['$scope', 'crabGrid', function($scope, crabG
     }
 
     //Successful validation
-    // if ($scope.settings.timed == "Up"){
-    //   crabGrid.gridSettings.timer.type = "Up";
-    // } else {
-    //   crabGrid.gridSettings.timer.type = "Down";
-    //   crabGrid.gridSettings.timer.value = $scope.settings.timed;
-    // }
-
-    crabGrid.initializeGrid($scope.settings.span.x, $scope.settings.span.y, $scope.settings.crabCount, $scope.settings.timed);
+    if (crabGrid.initializeGrid($scope.settings.span.x, $scope.settings.span.y, $scope.settings.crabCount, $scope.settings.timed)){
+      document.getElementById('crabSweeper').style.display = "Block";
+      document.getElementById('crabSettings').style.display = "None";
+    }
 
 
   };
@@ -144,10 +140,9 @@ crabApp.service('crabGrid', function(){
 
   var initializeGrid = function(gridX, gridY, crabCount, timer){
 
-
     //Creates a crab under a random tile
     var createCrab = function(){
-      var randomGridTile = Math.floor(Math.random() * gridSettings.grid.values.length-1);
+      var randomGridTile = Math.floor(Math.random() * gridSettings.grid.values.length);
       console.log("random number:", randomGridTile);
 
       if (gridSettings.grid.values[randomGridTile].type == "Empty"){
@@ -163,23 +158,27 @@ crabApp.service('crabGrid', function(){
     //Returns the index of requested coordinates
     var findGrid = function(x,y){
 
+      console.log("testing", x, y);
       //Out of bounds
-      if(x<0 || y<0){
+      if(x<0 || y<0 || x>gridX-1 || y>gridY-1){
         return console.log("Out of bounds!");
       }
 
       for (i=0; i< gridSettings.grid.values.length-1; i++){
         if (gridSettings.grid.values[i].x == x && gridSettings.grid.values[i].y == y){
+          console.log("returning key:", i);
           return i;
-        } else {
-          return console.log("No grid with coordinates (" + x + "," + y + ") was found.");
         }
       }
+
+      return console.log("No grid with coordinates (" + x + "," + y + ") was found.");
     };
 
     //Set-up
     if (timer !== "Up"){
       gridSettings.timer.type = "Down"
+    } else {
+      gridSettings.timer.type = "Up"
     }
     gridSettings.timer.value = timer;
     gridSettings.grid.x = gridX;
@@ -189,7 +188,7 @@ crabApp.service('crabGrid', function(){
     //Create the grid values
     for (i=0; i<gridX; i++){
       for (j=0; j<gridY; j++){
-        gridSettings.grid.values.push({x: i, y: j, type: "Empty", surrounding: undefined});
+        gridSettings.grid.values.push({x: i, y: j, type: "Empty", surrounding: 0});
       }
     }
 
@@ -199,26 +198,48 @@ crabApp.service('crabGrid', function(){
     }
 
     //Calculate surrounding crabs of a tile
-    for (i=0; i<gridSettings.grid.values.length-1; i++){
+    for (k=0; k<gridSettings.grid.values.length-1; k++){
 
-    }
+      var currentGrid = gridSettings.grid.values[k];
+      var x = currentGrid.x;
+      var y = currentGrid.y;
+      var surroundingGrids = [findGrid(x-1,y-1), findGrid(x-1,y), findGrid(x-1,y+1), findGrid(x,y-1), findGrid(x,y+1), findGrid(x+1,y-1), findGrid(x+1,y), findGrid(x+1,y+1)];
 
+      console.log(surroundingGrids, k);
 
+      for (j=0; j<8; j++){
+        if (isNaN(surroundingGrids[j]) === false){
+          if (gridSettings.grid.values[surroundingGrids[j]].type == "Crab"){
+            currentGrid.surrounding++;
+          }
+        }
+      }
 
+    }//End surrounding crabs
 
     console.log(gridSettings);
 
+    return true;
   }; //End initializeGrid
 
 
+  var retrieveGrid = function(){
+    return gridSettings;
+  }
+
   return {
-    initializeGrid: initializeGrid
+    initializeGrid: initializeGrid,
+    retrieveGrid: retrieveGrid
   };
 
 
-});
+});//End crabGrid
 
 
-crabApp.controller('crabSweeper', ['$scope', function($scope){
+crabApp.controller('crabSweeper', ['$scope', 'crabGrid', function($scope, crabGrid){
+
+  var gameData = crabGrid.retrieveGrid();
+  console.log(gameData);
+
 
 }]);

@@ -14,7 +14,7 @@
       <h1>Crabsweeper <small>Minesweeper, but with crabs!</small></h1>
     </div>
 
-    <div ng-controller="crabSettings">
+    <div id="crabSettings" ng-controller="crabSettings">
       <div class="panel panel-default">
         <div class="panel-heading">
           <h3 class="panel-title">Crabsweeper Settings</h3>
@@ -47,6 +47,16 @@
       </div>
 
     <!-- End crabSettings -->
+    </div>
+
+
+    <div id="crabSweeper" ng-controller="crabSweeper">
+      <div id="gameBoard">
+        <div class="crabGridTile" ng-repeat="tile in gameData.grid.values">
+          {{tile.surrounding}}
+        </div>
+      </div>
+
     </div>
 
 

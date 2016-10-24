@@ -2,6 +2,6 @@ body {
   padding: 5%;
 }
 
-#customTimeIn, #customGridIn {
+#customTimeIn, #customGridIn, #crabSweeper {
   display: none;
 }
