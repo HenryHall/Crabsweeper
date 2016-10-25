@@ -1,6 +1,20 @@
 var crabApp = angular.module( 'crabApp', []);
 
 
+//Right click directive for flagging crabs
+crabApp.directive('ngRightClick', function($parse) {
+    return function(scope, element, attrs) {
+        var fn = $parse(attrs.ngRightClick);
+        element.bind('contextmenu', function(event) {
+            scope.$apply(function() {
+                event.preventDefault();
+                fn(scope, {$event:event});
+            });
+        });
+    };
+});
+
+
 crabApp.controller('crabSettings', ['$scope', 'crabGrid', function($scope, crabGrid){
 
   //Initial settings
@@ -136,6 +150,7 @@ crabApp.service('crabGrid', ['$rootScope', function($rootScope){
       x: undefined,
       y: undefined,
       crabs: undefined,
+      flagCount: undefined,
       values: []
     }
   };
@@ -166,7 +181,7 @@ crabApp.service('crabGrid', ['$rootScope', function($rootScope){
         return console.log("Out of bounds!");
       }
 
-      for (i=0; i< gridSettings.grid.values.length-1; i++){
+      for (var i=0; i< gridSettings.grid.values.length-1; i++){
         if (gridSettings.grid.values[i].x == x && gridSettings.grid.values[i].y == y){
           console.log("returning key:", i);
           return i;
@@ -179,18 +194,33 @@ crabApp.service('crabGrid', ['$rootScope', function($rootScope){
     //Set-up
     if (timer !== "Up"){
       gridSettings.timer.type = "Down"
+      gridSettings.timer.value = timer;
     } else {
       gridSettings.timer.type = "Up"
+      gridSettings.timer.value = 0;
     }
-    gridSettings.timer.value = timer;
     gridSettings.grid.x = gridX;
     gridSettings.grid.y = gridY;
     gridSettings.grid.crabs = crabCount;
+    gridSettings.grid.flagCount = crabCount;
 
     //Create the grid values
-    for (i=0; i<gridX; i++){
+    for (var i=0; i<gridX; i++){
       for (j=0; j<gridY; j++){
-        gridSettings.grid.values.push({x: i, y: j, type: "Empty", surrounding: 0, revealed: false, checked: false, color: undefined});
+        gridSettings.grid.values.push(
+          {
+            x: i,
+            y: j,
+            type: "Empty",
+            surrounding: 0,
+            revealed: false,
+            checked: false,
+            flagged: false,
+            style: {
+              color: 'blue'
+            }
+          }
+        );
       }
     }
 
@@ -200,16 +230,16 @@ crabApp.service('crabGrid', ['$rootScope', function($rootScope){
     }
 
     //Calculate surrounding crabs of a tile
-    for (k=0; k<gridSettings.grid.values.length-1; k++){
+    for (var i=0; i<gridSettings.grid.values.length-1; i++){
 
-      var currentGrid = gridSettings.grid.values[k];
+      var currentGrid = gridSettings.grid.values[i];
       var x = currentGrid.x;
       var y = currentGrid.y;
       var surroundingGrids = [findGrid(x-1,y-1), findGrid(x-1,y), findGrid(x-1,y+1), findGrid(x,y-1), findGrid(x,y+1), findGrid(x+1,y-1), findGrid(x+1,y), findGrid(x+1,y+1)];
 
-      console.log(surroundingGrids, k);
+      console.log(surroundingGrids, i);
 
-      for (j=0; j<8; j++){
+      for (var j=0; j<8; j++){
         if (isNaN(surroundingGrids[j]) === false){
           if (gridSettings.grid.values[surroundingGrids[j]].type == "Crab"){
             currentGrid.surrounding++;
@@ -217,34 +247,35 @@ crabApp.service('crabGrid', ['$rootScope', function($rootScope){
         }
       }
 
+
       //Set text color based on number
       switch (currentGrid.surrounding) {
         case 0:
-          currentGrid.color = "black";
+          currentGrid.style.color = "black";
           break;
         case 1:
-          currentGrid.color = "lightblue";
+          currentGrid.style.color = "lightblue";
           break;
         case 2:
-          currentGrid.color = "blue";
+          currentGrid.style.color = "blue";
           break;
         case 3:
-          currentGrid.color = "lightgreen";
+          currentGrid.style.color = "lightgreen";
           break;
         case 4:
-          currentGrid.color = "green";
+          currentGrid.style.color = "green";
           break;
         case 5:
-          currentGrid.color = "orange";
+          currentGrid.style.color = "orange";
           break;
         case 6:
-          currentGrid.color = "orangered";
+          currentGrid.style.color = "orangered";
           break;
         case 7:
-          currentGrid.color = "red";
+          currentGrid.style.color = "red";
           break;
         case 8:
-          currentGrid.color = "darkred";
+          currentGrid.style.color = "darkred";
           break;
       }
 
@@ -274,41 +305,40 @@ crabApp.service('crabGrid', ['$rootScope', function($rootScope){
 crabApp.controller('crabSweeper', ['$scope', '$rootScope', 'crabGrid', function($scope, $rootScope, crabGrid){
 
   $scope.gameData;
+  var timerStart = false;
 
   $rootScope.$on('loadReady', function(e, data){
     $scope.gameData = data;
     console.log($scope.gameData);
-    gameReady();
+
+    //A tile is 30x30 px, set the width of the gameBoard
+    var boardWidth = ($scope.gameData.grid.x * 30)
+    document.getElementById('gameBoard').style.width = boardWidth + "px";
+
   });
 
 
-  function gameReady(){
-    //A tile is 40px, set the width of the gameBoard
-    var boardWidth = ($scope.gameData.grid.x * 30)
-    document.getElementById('gameBoard').style.width = boardWidth + "px";
-  }
-
-  $scope.tileDisplay = function(tile){
-    //Determine what each grid should display
-    if (tile.type == "Empty"){
-      //Return surrounding crab count
-      return tile.surrounding;
-    } else {
-      //Return crab image
-      return "<img src='../images/confused_crab.jpg' alt='crab'/>";
-    }
-  }
-
-
   $scope.revealTile = function(index){
-    console.log("Tile " + index + " is being revealed.");
-
     var currentTile = $scope.gameData.grid.values[index];
 
+    //Check to see if this is the first tile clicked, start game
+    if (timerStart == false){
+      $scope.timerStart(false);
+    }
+
+
+    //Make sure the tile isnt flagged
+    if (currentTile.flagged == true){
+      return;
+    }
+
+    console.log("Tile " + index + " is being revealed.");
+
     currentTile.revealed = true;
+    currentTile.style.background = {"background-color": "rgb(130, 130, 130)", border: "1px solid black", "line-height": "30px"};
 
     if (currentTile.type == "Crab"){
-      gameLoss();
+      gameLoss("Crab");
     } else if (currentTile.surrounding == 0){
       $scope.gameData.grid.values[index].checked = true;
       revealSurroundingTiles(index);
@@ -318,8 +348,77 @@ crabApp.controller('crabSweeper', ['$scope', '$rootScope', 'crabGrid', function(
   };
 
 
-  function gameLoss(){
-    console.log("You stepped on a crab.  Ouch!");
+  $scope.flagCrab = function(index){
+
+    var currentTile = $scope.gameData.grid.values[index];
+
+    //Make sure the tile isnt already revealed
+    if (currentTile.revealed == true || $scope.gameData.grid.flagCount == 0){
+      return;
+    }
+
+    switch (currentTile.flagged) {
+      case false:
+        currentTile.flagged = true;
+        $scope.gameData.grid.flagCount--;
+        break;
+
+      case true:
+        currentTile.flagged = false;
+        $scope.gameData.grid.flagCount++;
+        break;
+
+      default:
+
+    }
+
+  };
+
+
+  $scope.timerStart = function(loss){
+
+    timerStart = true;
+
+    //Game loss, cancel timer
+    if(loss == true){
+      clearInterval(crabTimer);
+      return;
+    }
+
+    var crabTimer;
+
+    if ($scope.gameData.timer.type == "Up"){
+
+      crabTimer = setInterval(function(){
+        $scope.gameData.timer.value++;
+        $scope.$apply();
+      }, 1000);
+
+    } else if ($scope.gameData.timer.type == "Down"){
+
+      crabTimer = setInterval(function(){
+        $scope.gameData.timer.value--;
+        $scope.$apply();
+        if ($scope.gameData.timer.value < 0){
+          gameLoss("Time");
+        }
+      }, 1000);
+    } else {
+      console.log("Game timer type not set!");
+    }
+  }
+
+
+  function gameLoss(reason){
+
+    $scope.timerStart(true);
+
+    if (reason == "Time"){
+      console.log("You ran out of time!");
+    } else if (reason == "Crab"){
+      console.log("You stepped on a crab.  Ouch!");
+    }
+
   }
 
 
@@ -351,15 +450,16 @@ crabApp.controller('crabSweeper', ['$scope', '$rootScope', 'crabGrid', function(
     var surroundingGrids = [findGrid(x-1,y-1), findGrid(x-1,y), findGrid(x-1,y+1), findGrid(x,y-1), findGrid(x,y+1), findGrid(x+1,y-1), findGrid(x+1,y), findGrid(x+1,y+1)];
 
 
-    for (i=0; i<8; i++){
+    for (var i=0; i<8; i++){
       if (isNaN(surroundingGrids[i]) == false){
         if ($scope.gameData.grid.values[surroundingGrids[i]].surrounding == 0 && $scope.gameData.grid.values[surroundingGrids[i]].checked == false){
-          $scope.gameData.grid.values[surroundingGrids[i]].revealed = true;
           $scope.gameData.grid.values[surroundingGrids[i]].checked = true;
           revealSurroundingTiles(surroundingGrids[i]);
-        } else {
-          $scope.gameData.grid.values[surroundingGrids[i]].revealed = true;
         }
+
+        $scope.gameData.grid.values[surroundingGrids[i]].revealed = true;
+        $scope.gameData.grid.values[surroundingGrids[i]].style.background = {"background-color": "rgb(130, 130, 130)", border: "1px solid black", "line-height": "30px"};
+
       }
     }
   }

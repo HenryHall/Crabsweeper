@@ -51,12 +51,38 @@
 
 
     <div id="crabSweeper" ng-controller="crabSweeper">
+
+      <div id="scoreBoard">
+
+        <div id="clock">
+          <h4>Time Left</h4>
+          {{gameData.timer.value}} s
+        </div>
+
+        <div id="crabCount">
+          <h4>Total Crabs</h4>
+          {{gameData.grid.crabs}}
+        </div>
+
+        <div id="flagCount">
+          <h4>Flags Left</h4>
+          {{gameData.grid.flagCount}}
+        </div>
+
+      </div>
+
       <div id="gameBoard">
-        <div class="crabGridTile" ng-repeat="tile in gameData.grid.values" ng-click="revealTile($index)">
+        <div class="crabGridTile"
+            ng-repeat="tile in gameData.grid.values"
+            ng-click="revealTile($index)"
+            ng-right-click="flagCrab($index)"
+            ng-style="tile.style.background">
+
+            <img ng-if="tile.flagged" src="../images/flag.png" alt="Flagged Crab" />
 
           <div ng-if="tile.revealed">
-            <p ng-if="tile.type == 'Empty'" ng-style="{color:tile.color}">{{tile.surrounding}}</p>
-            <img ng-if="tile.type == 'Crab'" src="../images/confused_crab.jpg" alt="Crab" />
+            <p ng-if="tile.type == 'Empty'" ng-style="tile.style">{{tile.surrounding}}</p>
+            <img ng-if="tile.type == 'Crab'" src="../images/crab_clipart.png" alt="Crab" />
           </div>
 
         </div>
