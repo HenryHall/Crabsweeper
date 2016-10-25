@@ -190,7 +190,7 @@ crabApp.service('crabGrid', ['$rootScope', function($rootScope){
     //Create the grid values
     for (i=0; i<gridX; i++){
       for (j=0; j<gridY; j++){
-        gridSettings.grid.values.push({x: i, y: j, type: "Empty", surrounding: 0, revealed: false});
+        gridSettings.grid.values.push({x: i, y: j, type: "Empty", surrounding: 0, revealed: false, checked: false, color: undefined});
       }
     }
 
@@ -215,6 +215,37 @@ crabApp.service('crabGrid', ['$rootScope', function($rootScope){
             currentGrid.surrounding++;
           }
         }
+      }
+
+      //Set text color based on number
+      switch (currentGrid.surrounding) {
+        case 0:
+          currentGrid.color = "black";
+          break;
+        case 1:
+          currentGrid.color = "lightblue";
+          break;
+        case 2:
+          currentGrid.color = "blue";
+          break;
+        case 3:
+          currentGrid.color = "lightgreen";
+          break;
+        case 4:
+          currentGrid.color = "green";
+          break;
+        case 5:
+          currentGrid.color = "orange";
+          break;
+        case 6:
+          currentGrid.color = "orangered";
+          break;
+        case 7:
+          currentGrid.color = "red";
+          break;
+        case 8:
+          currentGrid.color = "darkred";
+          break;
       }
 
     }//End surrounding crabs
@@ -279,6 +310,7 @@ crabApp.controller('crabSweeper', ['$scope', '$rootScope', 'crabGrid', function(
     if (currentTile.type == "Crab"){
       gameLoss();
     } else if (currentTile.surrounding == 0){
+      $scope.gameData.grid.values[index].checked = true;
       revealSurroundingTiles(index);
     }
 
@@ -318,18 +350,18 @@ crabApp.controller('crabSweeper', ['$scope', '$rootScope', 'crabGrid', function(
     var y = currentTile.y;
     var surroundingGrids = [findGrid(x-1,y-1), findGrid(x-1,y), findGrid(x-1,y+1), findGrid(x,y-1), findGrid(x,y+1), findGrid(x+1,y-1), findGrid(x+1,y), findGrid(x+1,y+1)];
 
+
     for (i=0; i<8; i++){
       if (isNaN(surroundingGrids[i]) == false){
-        if ($scope.gameData.grid.values[surroundingGrids[i]].surrounding == 0 && $scope.gameData.grid.values[surroundingGrids[i]].revealed == false){
-          console.log("We here");
+        if ($scope.gameData.grid.values[surroundingGrids[i]].surrounding == 0 && $scope.gameData.grid.values[surroundingGrids[i]].checked == false){
           $scope.gameData.grid.values[surroundingGrids[i]].revealed = true;
+          $scope.gameData.grid.values[surroundingGrids[i]].checked = true;
           revealSurroundingTiles(surroundingGrids[i]);
         } else {
           $scope.gameData.grid.values[surroundingGrids[i]].revealed = true;
         }
       }
     }
-
   }
 
 

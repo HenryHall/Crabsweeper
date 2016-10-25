@@ -55,7 +55,7 @@
         <div class="crabGridTile" ng-repeat="tile in gameData.grid.values" ng-click="revealTile($index)">
 
           <div ng-if="tile.revealed">
-            <p ng-if="tile.type == 'Empty'">{{tile.surrounding}}</p>
+            <p ng-if="tile.type == 'Empty'" ng-style="{color:tile.color}">{{tile.surrounding}}</p>
             <img ng-if="tile.type == 'Crab'" src="../images/confused_crab.jpg" alt="Crab" />
           </div>
 
