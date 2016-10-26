@@ -2,6 +2,26 @@ body {
   padding: 5%;
 }
 
+.page-header {
+  text-align: center;
+}
+
+.panel {
+  text-align: center;
+}
+
+.settingGroup {
+  display: inline-block;
+  width: 32%;
+  vertical-align: top;
+}
+
+#crabSettings button {
+  font-size: 3em;
+  width: 80%;
+  margin: auto;
+}
+
 #customTimeIn, #customGridIn {
   display: none;
 }
@@ -9,12 +29,24 @@ body {
 
 #crabSweeper {
   display: none;
+  width: 80%;
+  margin: auto;
+}
+
+#scoreBoard {
+  text-align: center;
 }
 
 #scoreBoard div {
   display: inline-block;
   height: 100px;
   width: auto;
+  margin: auto;
+  padding: 20px;
+  font-family: 'Revalia', cursive;
+}
+
+#gameBoard {
   margin: auto;
 }
 

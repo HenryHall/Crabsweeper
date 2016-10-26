@@ -124,11 +124,8 @@ crabApp.controller('crabSettings', ['$scope', 'crabGrid', function($scope, crabG
 
     //Successful validation
     crabGrid.initializeGrid($scope.settings.span.x, $scope.settings.span.y, $scope.settings.crabCount, $scope.settings.timed);
-    // if (crabGrid.initializeGrid($scope.settings.span.x, $scope.settings.span.y, $scope.settings.crabCount, $scope.settings.timed)){
       document.getElementById('crabSweeper').style.display = "Block";
       document.getElementById('crabSettings').style.display = "None";
-    //   $scope.$emit('loadReady', true);
-    // }
 
 
   };
@@ -217,7 +214,7 @@ crabApp.service('crabGrid', ['$rootScope', function($rootScope){
             checked: false,
             flagged: false,
             style: {
-              color: 'blue'
+              color: 'red'
             }
           }
         );
@@ -230,7 +227,7 @@ crabApp.service('crabGrid', ['$rootScope', function($rootScope){
     }
 
     //Calculate surrounding crabs of a tile
-    for (var i=0; i<gridSettings.grid.values.length-1; i++){
+    for (var i=0; i<gridSettings.grid.values.length; i++){
 
       var currentGrid = gridSettings.grid.values[i];
       var x = currentGrid.x;
@@ -251,7 +248,7 @@ crabApp.service('crabGrid', ['$rootScope', function($rootScope){
       //Set text color based on number
       switch (currentGrid.surrounding) {
         case 0:
-          currentGrid.style.color = "black";
+          currentGrid.style.color = "rgb(130, 130, 130)";
           break;
         case 1:
           currentGrid.style.color = "lightblue";
@@ -321,11 +318,15 @@ crabApp.controller('crabSweeper', ['$scope', '$rootScope', 'crabGrid', function(
   $scope.revealTile = function(index){
     var currentTile = $scope.gameData.grid.values[index];
 
+    //Check to see if this tile has already been revealed
+    if (currentTile.revealed == true){
+      return;
+    }
+
     //Check to see if this is the first tile clicked, start game
     if (timerStart == false){
       $scope.timerStart(false);
     }
-
 
     //Make sure the tile isnt flagged
     if (currentTile.flagged == true){

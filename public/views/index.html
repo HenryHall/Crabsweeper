@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <title>Crabsweeper</title>
 
+    <link href="https://fonts.googleapis.com/css?family=Revalia" rel="stylesheet">
     <link rel="stylesheet" href="../vendors/bootstrap.min.css" media="screen" title="no title">
     <link rel="stylesheet" href="../css/style.css" media="screen" title="no title">
 
@@ -20,26 +21,36 @@
           <h3 class="panel-title">Crabsweeper Settings</h3>
         </div>
         <div class="panel-body">
-          <h2>Game Settings</h2>
+          <h2 style="text-align: center">Game Settings</h2>
+          <br><br>
+
           <div id="settingsAlert" class="alert alert-danger" role="alert" style="display:none">Please make sure you have specified each setting.</div>
 
           <form novalidate>
-            <h3>Grid</h3>
-            <input id="9x9" class="gridRadio" type="radio" ng-model="settings.grid" value="9x9" ng-focus="selectGrid('9x9')"> <label for="9x9">9x9</label> <br>
-            <input id="18x18" class="gridRadio" type="radio" ng-model="settings.grid" value="18x18" ng-focus="selectGrid('18x18')"> <label for="18x18">18x18</label> <br>
-            <input id="36x18" class="gridRadio" type="radio" ng-model="settings.grid" value="36x18" ng-focus="selectGrid('36x18')"> <label for="36x18">36x18</label> <br>
-            <input id="customGrid" type="radio" ng-model="settings.grid" value="Custom" ng-focus="selectGrid('Custom')"> <label for="customGrid">Custom</label> <span id="customGridIn"><input type="input" ng-model="settings.span.x"> x <input type="input" ng-model="settings.span.y"></span>
 
-            <h3>Crab Count</h3>
-            <input type="input" ng-model="settings.crabCount" value="settings.crabCount" placeholder="How many crabs?">
+            <div class="settingGroup">
+              <h3>Grid</h3>
+              <input id="9x9" class="gridRadio" type="radio" ng-model="settings.grid" value="9x9" ng-focus="selectGrid('9x9')"> <label for="9x9">9x9</label> <br>
+              <input id="18x18" class="gridRadio" type="radio" ng-model="settings.grid" value="18x18" ng-focus="selectGrid('18x18')"> <label for="18x18">18x18</label> <br>
+              <input id="36x18" class="gridRadio" type="radio" ng-model="settings.grid" value="36x18" ng-focus="selectGrid('36x18')"> <label for="36x18">36x18</label> <br>
+              <input id="customGrid" type="radio" ng-model="settings.grid" value="Custom" ng-focus="selectGrid('Custom')"> <label for="customGrid">Custom</label> <span id="customGridIn"><input type="input" ng-model="settings.span.x"> x <input type="input" ng-model="settings.span.y"></span>
+            </div>
 
-            <h3>Timer</h3>
-            <input id="timedFalse" type="radio" ng-model="settings.timed" value="Up" ng-focus="timerSettings('Up')"> <label for="timedFalse">Count Up</label><br>
-            <input id="timedTrue" type="radio" ng-focus="timerSettings('Custom')"> <label for="timedTrue">Count Down</label> <input id="customTimeIn" type="input" ng-model="settings.timed" placeholder="How long? (Seconds)"><br>
+            <div class="settingGroup">
+              <h3>Crab Count</h3>
+              <input type="input" ng-model="settings.crabCount" value="settings.crabCount" placeholder="How many crabs?">
+            </div>
 
-            <button type="button" ng-click="startGame()">Start</button>
+            <div class="settingGroup">
+              <h3>Timer</h3>
+              <input id="timedFalse" type="radio" ng-model="settings.timed" value="Up" ng-focus="timerSettings('Up')"> <label for="timedFalse">Count Up</label><br>
+              <input id="timedTrue" type="radio" ng-focus="timerSettings('Custom')"> <label for="timedTrue">Count Down</label> <input id="customTimeIn" type="input" ng-model="settings.timed" placeholder="How long? (Seconds)"><br>
+            </div>
 
           </form>
+          <br><br>
+
+          <button type="button" ng-click="startGame()" class="btn btn-block btn-lg btn-primary">Start</button>
 
         </div>
 
