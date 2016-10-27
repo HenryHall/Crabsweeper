@@ -26,24 +26,45 @@ body {
   display: none;
 }
 
-
 #crabSweeper {
   display: none;
   width: 80%;
   margin: auto;
+  min-width: 900px;
+  margin-bottom: 50vh;
 }
 
-#scoreBoard {
+#scoreboard {
   text-align: center;
+  background-color: rgb(200, 200, 200);
+  margin-bottom: 40px;
 }
 
-#scoreBoard div {
+#scoreboard div {
   display: inline-block;
-  height: 100px;
-  width: auto;
-  margin: auto;
+  width: 250px;
+  margin: 20px;
   padding: 20px;
-  font-family: 'Revalia', cursive;
+  font-family: 'Black Ops One', cursive;
+  border: outset 4px grey;
+  background-color: rgb(135,135,135);
+  border-radius: 10px;
+}
+
+#scoreboard h4 {
+  margin-bottom: 20px;
+  margin-top: -10px;
+  font-size: 2em;
+}
+
+.scoreboardValue {
+  background-color: rgb(50, 50, 50);
+  color: rgb(0, 217, 0);
+  padding: 15px;
+  margin-top: 20px;
+  border-radius: 15px;
+  font-size: 5em;
+  display: block;
 }
 
 #gameBoard {

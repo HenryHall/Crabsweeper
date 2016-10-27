@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <title>Crabsweeper</title>
 
-    <link href="https://fonts.googleapis.com/css?family=Revalia" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Black+Ops+One" rel="stylesheet">
     <link rel="stylesheet" href="../vendors/bootstrap.min.css" media="screen" title="no title">
     <link rel="stylesheet" href="../css/style.css" media="screen" title="no title">
 
@@ -38,7 +38,7 @@
 
             <div class="settingGroup">
               <h3>Crab Count</h3>
-              <input type="input" ng-model="settings.crabCount" value="settings.crabCount" placeholder="How many crabs?">
+              <input type="text" ng-model="settings.crabCount" value="settings.crabCount" class="form-control" placeholder="How many crabs?">
             </div>
 
             <div class="settingGroup">
@@ -63,21 +63,21 @@
 
     <div id="crabSweeper" ng-controller="crabSweeper">
 
-      <div id="scoreBoard">
+      <div id="scoreboard">
 
         <div id="clock">
           <h4>Time Left</h4>
-          {{gameData.timer.value}} s
+          <span class="scoreboardValue">{{gameData.timer.value}}s</span>
         </div>
 
         <div id="crabCount">
           <h4>Total Crabs</h4>
-          {{gameData.grid.crabs}}
+          <span class="scoreboardValue">{{gameData.grid.crabs}}</span>
         </div>
 
         <div id="flagCount">
           <h4>Flags Left</h4>
-          {{gameData.grid.flagCount}}
+          <span class="scoreboardValue">{{gameData.grid.flagCount}}</span>
         </div>
 
       </div>
@@ -89,7 +89,7 @@
             ng-right-click="flagCrab($index)"
             ng-style="tile.style.background">
 
-            <img ng-if="tile.flagged" src="../images/flag.png" alt="Flagged Crab" />
+            <img ng-if="tile.flagged" src="../images/flag2.png" alt="Flagged Crab" />
 
           <div ng-if="tile.revealed">
             <p ng-if="tile.type == 'Empty'" ng-style="tile.style">{{tile.surrounding}}</p>

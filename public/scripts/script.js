@@ -99,6 +99,8 @@ crabApp.controller('crabSettings', ['$scope', 'crabGrid', function($scope, crabG
     var maxCrabs = $scope.settings.span.x * $scope.settings.span.y;
     $scope.settings.span.x = parseInt($scope.settings.span.x);
     $scope.settings.span.y = parseInt($scope.settings.span.y);
+    console.log("x", $scope.settings.span.x);
+    console.log("y", $scope.settings.span.y);
 
     console.log($scope.settings, maxCrabs);
     console.log(isNaN($scope.settings.crabCount));
@@ -178,7 +180,7 @@ crabApp.service('crabGrid', ['$rootScope', function($rootScope){
         return console.log("Out of bounds!");
       }
 
-      for (var i=0; i< gridSettings.grid.values.length-1; i++){
+      for (var i=0; i<gridSettings.grid.values.length; i++){
         if (gridSettings.grid.values[i].x == x && gridSettings.grid.values[i].y == y){
           console.log("returning key:", i);
           return i;
@@ -189,6 +191,7 @@ crabApp.service('crabGrid', ['$rootScope', function($rootScope){
     };
 
     //Set-up
+    gridSettings.running = true;
     if (timer !== "Up"){
       gridSettings.timer.type = "Down"
       gridSettings.timer.value = timer;
@@ -202,12 +205,12 @@ crabApp.service('crabGrid', ['$rootScope', function($rootScope){
     gridSettings.grid.flagCount = crabCount;
 
     //Create the grid values
-    for (var i=0; i<gridX; i++){
-      for (j=0; j<gridY; j++){
+    for (var i=0; i<gridY; i++){
+      for (j=0; j<gridX; j++){
         gridSettings.grid.values.push(
           {
-            x: i,
-            y: j,
+            x: j,
+            y: i,
             type: "Empty",
             surrounding: 0,
             revealed: false,
@@ -318,14 +321,14 @@ crabApp.controller('crabSweeper', ['$scope', '$rootScope', 'crabGrid', function(
   $scope.revealTile = function(index){
     var currentTile = $scope.gameData.grid.values[index];
 
-    //Check to see if this tile has already been revealed
-    if (currentTile.revealed == true){
+    //Check to see if this tile has already been revealed or if the game is over
+    if (currentTile.revealed == true || $scope.gameData.running == false){
       return;
     }
 
     //Check to see if this is the first tile clicked, start game
     if (timerStart == false){
-      $scope.timerStart(false);
+      $scope.timerStart();
     }
 
     //Make sure the tile isnt flagged
@@ -340,11 +343,26 @@ crabApp.controller('crabSweeper', ['$scope', '$rootScope', 'crabGrid', function(
 
     if (currentTile.type == "Crab"){
       gameLoss("Crab");
+      return;
     } else if (currentTile.surrounding == 0){
       $scope.gameData.grid.values[index].checked = true;
       revealSurroundingTiles(index);
     }
 
+    //Check for game win
+    var winCount = ($scope.gameData.grid.x * $scope.gameData.grid.y) - $scope.gameData.grid.crabs; //Number of non-crab tiles
+    for (var i=0; i<$scope.gameData.grid.values.length; i++){
+      if ($scope.gameData.grid.values[i].revealed == true){
+        winCount--;
+      }
+    }
+
+    if (winCount == 0){
+      gameWin();
+      return;
+    }
+
+    return;
 
   };
 
@@ -353,8 +371,8 @@ crabApp.controller('crabSweeper', ['$scope', '$rootScope', 'crabGrid', function(
 
     var currentTile = $scope.gameData.grid.values[index];
 
-    //Make sure the tile isnt already revealed
-    if (currentTile.revealed == true || $scope.gameData.grid.flagCount == 0){
+    //Make sure the tile isnt already revealed and that the game is still running
+    if (currentTile.revealed == true || $scope.gameData.running == false){
       return;
     }
 
@@ -376,33 +394,45 @@ crabApp.controller('crabSweeper', ['$scope', '$rootScope', 'crabGrid', function(
   };
 
 
-  $scope.timerStart = function(loss){
+  $scope.timerStart = function(){
 
+    //Mark the game as started
     timerStart = true;
-
-    //Game loss, cancel timer
-    if(loss == true){
-      clearInterval(crabTimer);
-      return;
-    }
 
     var crabTimer;
 
     if ($scope.gameData.timer.type == "Up"){
 
       crabTimer = setInterval(function(){
+
+        //Max time or game over
+        if ($scope.gameData.timer.value > 999 || timerStart == false){
+          clearInterval(crabTimer);
+        }
+
         $scope.gameData.timer.value++;
+
         $scope.$apply();
       }, 1000);
 
     } else if ($scope.gameData.timer.type == "Down"){
 
       crabTimer = setInterval(function(){
-        $scope.gameData.timer.value--;
-        $scope.$apply();
+
+        //Out of time
         if ($scope.gameData.timer.value < 0){
           gameLoss("Time");
+          clearInterval(crabTimer);
         }
+
+        //Stepped on a crab
+        if (timerStart == false){
+          clearInterval(crabTimer);
+        }
+
+        $scope.gameData.timer.value--;
+        $scope.$apply();
+
       }, 1000);
     } else {
       console.log("Game timer type not set!");
@@ -412,7 +442,10 @@ crabApp.controller('crabSweeper', ['$scope', '$rootScope', 'crabGrid', function(
 
   function gameLoss(reason){
 
-    $scope.timerStart(true);
+    $scope.gameData.running = false;
+
+    //Stop the timer
+    timerStart = false;
 
     if (reason == "Time"){
       console.log("You ran out of time!");
@@ -420,6 +453,21 @@ crabApp.controller('crabSweeper', ['$scope', '$rootScope', 'crabGrid', function(
       console.log("You stepped on a crab.  Ouch!");
     }
 
+  }
+
+
+  function gameWin(){
+    $scope.gameData.running = false;
+    //Stop the timer
+    timerStart = false;
+
+    for (var i=0; i<$scope.gameData.grid.values.length; i++){
+      if ($scope.gameData.grid.values[i].type == "Crab"){
+        $scope.gameData.grid.values[i].flagged = true;
+      }
+    }
+
+    console.log("You won the game!");
   }
 
 
@@ -432,7 +480,7 @@ crabApp.controller('crabSweeper', ['$scope', '$rootScope', 'crabGrid', function(
       return console.log("Out of bounds!");
     }
 
-    for (i=0; i< $scope.gameData.grid.values.length-1; i++){
+    for (i=0; i< $scope.gameData.grid.values.length; i++){
       if ($scope.gameData.grid.values[i].x == x && $scope.gameData.grid.values[i].y == y){
         console.log("returning key:", i);
         return i;
@@ -452,7 +500,10 @@ crabApp.controller('crabSweeper', ['$scope', '$rootScope', 'crabGrid', function(
 
 
     for (var i=0; i<8; i++){
-      if (isNaN(surroundingGrids[i]) == false){
+      //Make sure it is a tile and not flagged
+      if (isNaN(surroundingGrids[i]) == false && $scope.gameData.grid.values[surroundingGrids[i]].flagged == false){
+
+        //No surrounding crabs and has not been checked before
         if ($scope.gameData.grid.values[surroundingGrids[i]].surrounding == 0 && $scope.gameData.grid.values[surroundingGrids[i]].checked == false){
           $scope.gameData.grid.values[surroundingGrids[i]].checked = true;
           revealSurroundingTiles(surroundingGrids[i]);
