@@ -38,13 +38,13 @@
 
             <div class="settingGroup">
               <h3>Crab Count</h3>
-              <input type="text" ng-model="settings.crabCount" value="settings.crabCount" class="form-control" placeholder="How many crabs?">
+              <input id="crabCount" type="text" ng-model="settings.crabCount" value="settings.crabCount" class="form-control" placeholder="How many crabs?">
             </div>
 
             <div class="settingGroup">
               <h3>Timer</h3>
-              <input id="timedFalse" type="radio" ng-model="settings.timed" value="Up" ng-focus="timerSettings('Up')"> <label for="timedFalse">Count Up</label><br>
-              <input id="timedTrue" type="radio" ng-focus="timerSettings('Custom')"> <label for="timedTrue">Count Down</label> <input id="customTimeIn" type="input" ng-model="settings.timed" placeholder="How long? (Seconds)"><br>
+              <input id="timedFalse" type="radio" ng-model="settings.timed" value="Up" ng-focus="timerSettings('Up')"> <label for="timedFalse">High Score</label><br>
+              <input id="timedTrue" type="radio" ng-focus="timerSettings('Custom')"> <label for="timedTrue">Race the Clock</label> <input id="customTimeIn" type="input" ng-model="settings.timed" placeholder="How long? (Seconds)"><br>
             </div>
 
           </form>

@@ -12,8 +12,17 @@ body {
 
 .settingGroup {
   display: inline-block;
-  width: 32%;
+  width: 200px;
   vertical-align: top;
+  margin-left: 5%;
+  margin-right: 5%;
+  text-align: left;
+}
+
+#customGridIn input {
+  width: 3em;
+  line-height: .1;
+  text-align: center;
 }
 
 #crabSettings button {
@@ -31,7 +40,7 @@ body {
   width: 80%;
   margin: auto;
   min-width: 900px;
-  margin-bottom: 50vh;
+  margin-bottom: 30vh;
 }
 
 #scoreboard {

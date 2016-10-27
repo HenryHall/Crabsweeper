@@ -38,6 +38,7 @@ crabApp.controller('crabSettings', ['$scope', 'crabGrid', function($scope, crabG
         $scope.settings.span.x = 9;
         $scope.settings.span.y = 9;
         document.getElementById('customGridIn').style.display = "None";
+        document.getElementById('crabCount').readOnly = true;
         break;
 
       case '18x18':
@@ -45,6 +46,7 @@ crabApp.controller('crabSettings', ['$scope', 'crabGrid', function($scope, crabG
         $scope.settings.span.x = 18;
         $scope.settings.span.y = 18;
         document.getElementById('customGridIn').style.display = "None";
+        document.getElementById('crabCount').readOnly = true;
         break;
 
       case '36x18':
@@ -52,6 +54,7 @@ crabApp.controller('crabSettings', ['$scope', 'crabGrid', function($scope, crabG
         $scope.settings.span.x = 36;
         $scope.settings.span.y = 18;
         document.getElementById('customGridIn').style.display = "None";
+        document.getElementById('crabCount').readOnly = true;
         break;
 
       case 'Custom':
@@ -61,6 +64,7 @@ crabApp.controller('crabSettings', ['$scope', 'crabGrid', function($scope, crabG
         }
         document.getElementById('customGridIn').style.display = "inline-block";
         document.getElementById('customGrid').checked = true;
+        document.getElementById('crabCount').readOnly = false;
         $scope.settings.crabCount = undefined;
         $scope.settings.span.x = undefined;
         $scope.settings.span.y = undefined;
