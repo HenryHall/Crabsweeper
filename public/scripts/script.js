@@ -15,7 +15,7 @@ crabApp.directive('ngRightClick', function($parse) {
 });
 
 
-crabApp.controller('crabSettings', ['$scope', 'crabGrid', function($scope, crabGrid){
+crabApp.controller('crabSettings', ['$scope', '$http', 'crabGrid', function($scope, $http, crabGrid){
 
   //Initial settings
   $scope.settings = {
@@ -27,6 +27,34 @@ crabApp.controller('crabSettings', ['$scope', 'crabGrid', function($scope, crabG
     crabCount: undefined,
     timed: undefined
   };
+
+  $scope.refreshStats = function(){
+    $http({
+      method: 'GET',
+      url: '/crabScores/stats'
+    }).then(function(data){
+      $scope.statsData = data.data[0];
+      console.log($scope.statsData);
+    });
+  };
+
+  $scope.refreshStats();
+
+  $scope.scoreData = {
+    mode1: undefined,
+    mode2: undefined,
+    mode3: undefined
+  };
+
+  $http({
+    method: 'GET',
+    url: '/crabScores/scores'
+  }).then(function(data){
+    console.log(data.data);
+    $scope.scoreData.mode1 = data.data.mode1;
+    $scope.scoreData.mode2 = data.data.mode2;
+    $scope.scoreData.mode3 = data.data.mode3;
+  });
 
 
   //When a radio button or custom grid is focused
@@ -42,7 +70,7 @@ crabApp.controller('crabSettings', ['$scope', 'crabGrid', function($scope, crabG
         break;
 
       case '18x18':
-        $scope.settings.crabCount = 40;
+        $scope.settings.crabCount = 50;
         $scope.settings.span.x = 18;
         $scope.settings.span.y = 18;
         document.getElementById('customGridIn').style.display = "None";
@@ -50,7 +78,7 @@ crabApp.controller('crabSettings', ['$scope', 'crabGrid', function($scope, crabG
         break;
 
       case '36x18':
-        $scope.settings.crabCount = 80;
+        $scope.settings.crabCount = 120;
         $scope.settings.span.x = 36;
         $scope.settings.span.y = 18;
         document.getElementById('customGridIn').style.display = "None";
@@ -103,6 +131,7 @@ crabApp.controller('crabSettings', ['$scope', 'crabGrid', function($scope, crabG
     var maxCrabs = $scope.settings.span.x * $scope.settings.span.y;
     $scope.settings.span.x = parseInt($scope.settings.span.x);
     $scope.settings.span.y = parseInt($scope.settings.span.y);
+    $scope.settings.crabCount = parseInt($scope.settings.crabCount);
     console.log("x", $scope.settings.span.x);
     console.log("y", $scope.settings.span.y);
 
@@ -110,30 +139,52 @@ crabApp.controller('crabSettings', ['$scope', 'crabGrid', function($scope, crabG
     console.log(isNaN($scope.settings.crabCount));
 
     //Validate form
+    $scope.alertMessage;
     if (isNaN($scope.settings.span.x) || isNaN($scope.settings.span.y)){
+      $scope.alertMessage = "Make sure you specify integer grid values.";
       document.getElementById('settingsAlert').style.display = "block";
       console.log("fail1");
       return;
     } else if (isNaN($scope.settings.crabCount) && $scope.settings.crabCount !== ""){
+      $scope.alertMessage = "Make sure your crab count is an integer.";
       document.getElementById('settingsAlert').style.display = "block";
       console.log("fail2");
       return;
     } else if (isNaN($scope.settings.timed) && $scope.settings.timed !== "Up"){
+      $scope.alertMessage = "Please select a timer.";
       document.getElementById('settingsAlert').style.display = "block";
       console.log("fail3");
       return;
     } else if ($scope.settings.crabCount > maxCrabs-1){
+      $scope.alertMessage = "Your grid can't hold that many crabs!";
       document.getElementById('settingsAlert').style.display = "block";
       console.log("fail4");
       return;
+    } else if (Math.floor($scope.settings.span.x)<$scope.settings.span.x || Math.floor($scope.settings.span.y)<$scope.settings.span.y || Math.floor($scope.settings.crabCount)<$scope.settings.crabCount){
+      $scope.alertMessage = "Integer values only!";
+      document.getElementById('settingsAlert').style.display = "block";
+      console.log("fail5");
+      return;
     }
+
 
     //Successful validation
     crabGrid.initializeGrid($scope.settings.span.x, $scope.settings.span.y, $scope.settings.crabCount, $scope.settings.timed);
       document.getElementById('crabSweeper').style.display = "Block";
       document.getElementById('crabSettings').style.display = "None";
 
+  };
 
+
+  $scope.leaderboard = function(){
+    document.getElementById('leaderboard').style.display = "block";
+    document.getElementById('settingsPanel').style.display = "none";
+  };
+
+
+  $scope.viewSettings = function(){
+    document.getElementById('leaderboard').style.display = "none";
+    document.getElementById('settingsPanel').style.display = "block";
   };
 
 
@@ -286,7 +337,6 @@ crabApp.service('crabGrid', ['$rootScope', function($rootScope){
     }//End surrounding crabs
 
     console.log(gridSettings);
-
     $rootScope.$emit('loadReady', gridSettings);
 
     return true;
@@ -294,7 +344,7 @@ crabApp.service('crabGrid', ['$rootScope', function($rootScope){
 
 
   var retrieveGrid = function(){
-    return gridSettings;
+    return;
   }
 
   return {
@@ -306,7 +356,7 @@ crabApp.service('crabGrid', ['$rootScope', function($rootScope){
 }]);//End crabGrid
 
 
-crabApp.controller('crabSweeper', ['$scope', '$rootScope', 'crabGrid', function($scope, $rootScope, crabGrid){
+crabApp.controller('crabSweeper', ['$scope', '$rootScope', '$http', 'crabGrid', function($scope, $rootScope, $http, crabGrid){
 
   $scope.gameData;
   var timerStart = false;
@@ -412,6 +462,7 @@ crabApp.controller('crabSweeper', ['$scope', '$rootScope', 'crabGrid', function(
         //Max time or game over
         if ($scope.gameData.timer.value > 999 || timerStart == false){
           clearInterval(crabTimer);
+          return;
         }
 
         $scope.gameData.timer.value++;
@@ -427,11 +478,13 @@ crabApp.controller('crabSweeper', ['$scope', '$rootScope', 'crabGrid', function(
         if ($scope.gameData.timer.value < 0){
           gameLoss("Time");
           clearInterval(crabTimer);
+          return;
         }
 
         //Stepped on a crab
         if (timerStart == false){
           clearInterval(crabTimer);
+          return;
         }
 
         $scope.gameData.timer.value--;
@@ -448,13 +501,17 @@ crabApp.controller('crabSweeper', ['$scope', '$rootScope', 'crabGrid', function(
 
     $scope.gameData.running = false;
 
+    //Set displays
+    document.getElementById('finalboard').style.display = "inline-block";
+    document.getElementById('gameBoard').style.display = "inline-block";
+
     //Stop the timer
     timerStart = false;
 
     if (reason == "Time"){
-      console.log("You ran out of time!");
+      $scope.gameOver = "You ran out of time!";
     } else if (reason == "Crab"){
-      console.log("You stepped on a crab.  Ouch!");
+      $scope.gameOver = "You stepped on a crab.  Ouch!";
     }
 
   }
@@ -464,6 +521,12 @@ crabApp.controller('crabSweeper', ['$scope', '$rootScope', 'crabGrid', function(
     $scope.gameData.running = false;
     //Stop the timer
     timerStart = false;
+    //Set displays
+    document.getElementById('finalboard').style.display = "inline-block";
+    document.getElementById('gameBoard').style.display = "inline-block";
+    document.getElementById('scoreSubmitAlert').style.display = "block";
+    //Set message
+    $scope.gameOver = "Nice Work!";
 
     for (var i=0; i<$scope.gameData.grid.values.length; i++){
       if ($scope.gameData.grid.values[i].type == "Crab"){
@@ -471,7 +534,157 @@ crabApp.controller('crabSweeper', ['$scope', '$rootScope', 'crabGrid', function(
       }
     }
 
+    //Submit score
+
+    //Check game mode
+    console.log($scope.gameData);
+    if ($scope.gameData.grid.x == 9 && $scope.gameData.grid.y == 9){
+      var gameType = "9x9";
+    } else if ($scope.gameData.grid.x == 18 && $scope.gameData.grid.y == 18){
+      var gameType = "18x18";
+    } else if ($scope.gameData.grid.x == 36 && $scope.gameData.grid.y == 18){
+      var gameType = "36x19";
+    } else {
+      var gameType = "Custom";
+    }
+
+    if ($scope.gameData.timer.type !== "Up"){
+      var gameType = "Custom"
+    }
+
+    var scoreObj = {
+      grid: gameType,
+      score: $scope.gameData.timer.value
+    };
+
+    $scope.checkedScoreMessage = "Play a preset mode to place on the leaderboard";
+
+    console.log(scoreObj);
+
+    if(gameType !== "Custom"){
+      $scope.checkedScoreMessage = "Checking leaderboard...";
+
+      $http({
+        method: 'POST',
+        url: '/crabScores/checkScores',
+        data: scoreObj
+      }).then(function(data){
+        console.log(data.data);
+        if (data.data.success == "true"){
+
+
+          var rank;
+          switch (data.data.rank) {
+            case 1:
+              rank = "first";
+              break;
+            case 2:
+              rank = "second";
+              break;
+            case 3:
+              rank = "third";
+              break;
+            case 4:
+              rank = "fourth";
+              break;
+            case 5:
+              rank = "fifth";
+              break;
+            case 6:
+              rank = "sixth";
+              breakl
+            case 7:
+              rank = "seventh";
+              break;
+            case 8:
+              rank = "eigth";
+              break;
+            case 9:
+              rank = "ninth";
+              break;
+            case 10:
+              rank = "tenth";
+              break;
+            default:
+              rank = "wtf";
+
+          }
+
+          $scope.checkedScoreMessage = "You are " + rank + " on the leaderboard!  Enter your name.";
+          document.getElementById('winnerNameIn').style.display = "block";
+        } else {
+          $scope.checkedScoreMessage = "Play again to reach the leaderboard.";
+        }
+      });
+
+    }
+
     console.log("You won the game!");
+  }//End gameWin
+
+
+  $scope.submitHighScore = function(){
+
+    //Check game mode
+    console.log($scope.gameData);
+    if ($scope.gameData.grid.x == 9 && $scope.gameData.grid.y == 9){
+      var gameType = "9x9";
+    } else if ($scope.gameData.grid.x == 18 && $scope.gameData.grid.y == 18){
+      var gameType = "18x18";
+    } else if ($scope.gameData.grid.x == 36 && $scope.gameData.grid.y == 18){
+      var gameType = "36x19";
+    } else {
+      var gameType = "Custom";
+    }
+
+    if ($scope.gameData.timer.type !== "Up"){
+      var gameType = "Custom"
+    }
+
+    var winnerObj = {
+      grid: gameType,
+      score: $scope.gameData.timer.value,
+      playerName: $scope.playerName
+    };
+
+    console.log(winnerObj);
+
+    $http({
+      method: 'POST',
+      url: '/crabScores/submitScore',
+      data: winnerObj
+    });
+
+    document.getElementById('winnerNameIn').style.display = "none";
+    document.getElementById('winnerNameIn').classList.remove("alert-success");
+    document.getElementById('winnerNameIn').classList.add("alert-info");
+    $scope.checkedScoreMessage = "Head over to the leaderboards to see your name!"
+
+  };
+
+
+  $scope.revealBoard = function(){
+
+    for (var i=0; i<$scope.gameData.grid.values.length; i++){
+      if ($scope.gameData.grid.values[i].type == "Crab"){
+        $scope.gameData.grid.values[i].revealed = true;
+        $scope.gameData.grid.values[i].flagged = false;
+      }
+    }
+  };
+
+
+  $scope.resetBoard = function(){
+
+    console.log(crabGrid.retrieveGrid());
+    $scope.gameData = crabGrid.retrieveGrid();
+    console.log($scope.gameData);
+
+  };
+
+
+  $scope.goToSettings = function(){
+    location.reload();
   }
 
 

@@ -4,8 +4,24 @@
   "description": "Minesweeper made with crabs",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "Node server/app.js"
   },
   "author": "HenryHall",
-  "license": "ISC"
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HenryHall/Crabsweeper.git"
+  },
+  "bugs": {
+    "url": "https://github.com/HenryHall/Crabsweeper/issues"
+  },
+  "homepage": "https://github.com/HenryHall/Crabsweeper#readme",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "express": "^4.14.0",
+    "path": "^0.12.7",
+    "pg": "^6.1.0",
+    "router": "^1.1.4"
+  }
 }

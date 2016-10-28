@@ -5,18 +5,21 @@
     <title>Crabsweeper</title>
 
     <link href="https://fonts.googleapis.com/css?family=Black+Ops+One" rel="stylesheet">
-    <link rel="stylesheet" href="../vendors/bootstrap.min.css" media="screen" title="no title">
-    <link rel="stylesheet" href="../css/style.css" media="screen" title="no title">
+    <link rel="stylesheet" href="./vendors/bootstrap.min.css" media="screen" title="no title">
+    <link rel="stylesheet" href="./css/style.css" media="screen" title="no title">
 
   </head>
   <body>
 
     <div class="page-header">
-      <h1>Crabsweeper <small>Minesweeper, but with crabs!</small></h1>
+      <h1>Crabsweeper <small>Minesweeper, but with crabs!</small><small style="float:right; font-size:.5em;"><a href="https://github.com/HenryHall" style="color: inherit"><img src="./images/github.png" style="height: 2em" alt="GitHub Logo" />github.com/HenryHall</a></small></h1>
     </div>
 
     <div id="crabSettings" ng-controller="crabSettings">
-      <div class="panel panel-default">
+
+      <h4>Games Played: {{statsData.playCount}}      Games Won: {{statsData.winCount}}</h4>
+
+      <div id="settingsPanel" class="panel panel-default">
         <div class="panel-heading">
           <h3 class="panel-title">Crabsweeper Settings</h3>
         </div>
@@ -24,7 +27,7 @@
           <h2 style="text-align: center">Game Settings</h2>
           <br><br>
 
-          <div id="settingsAlert" class="alert alert-danger" role="alert" style="display:none">Please make sure you have specified each setting.</div>
+          <div id="settingsAlert" class="alert alert-danger" role="alert" style="display:none">{{alertMessage}}</div>
 
           <form novalidate>
 
@@ -50,12 +53,91 @@
           </form>
           <br><br>
 
-          <button type="button" ng-click="startGame()" class="btn btn-block btn-lg btn-primary">Start</button>
+          <button type="button" ng-click="startGame()" class="btn btn-lg btn-primary">Start</button>
+          <button type="button" ng-click="leaderboard()" class="btn btn-lg btn-info">Leaderboards</button>
 
         </div>
 
       <!-- End Settings Panel -->
       </div>
+
+
+      <div id="leaderboard">
+
+        <button type="button" ng-click="viewSettings()" class="btn btn-info btn-lg btn-block" style="display: 'block'; width: 100%">Settings</button>
+
+        <h2 style="text-align:center">Leaderboards</h2>
+
+        <h3>9x9</h3>
+        <table class="table table-striped">
+          <thead class="thead-inverse">
+            <tr>
+              <th>#</th>
+              <th>Name</th>
+              <th>Score</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr ng-repeat="record in scoreData.mode1">
+              <td>{{$index + 1}}</td>
+              <td>{{record.playername}}</td>
+              <td>{{record.score}}</td>
+              <td>{{record.date  | date: 'shortDate'}}</td>
+            </tr>
+          </tbody>
+        </table>
+
+
+        <h3>18x18</h3>
+        <table class="table table-striped">
+          <thead class="thead-inverse">
+            <tr>
+              <td>#</td>
+              <td>Name</td>
+              <td>Score</td>
+              <td>Date</td>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr ng-repeat="record in scoreData.mode2">
+              <td>{{$index + 1}}</td>
+              <td>{{record.playername}}</td>
+              <td>{{record.score}}</td>
+              <td>{{record.date  | date: 'shortDate'}}</td>
+            </tr>
+          </tbody>
+        </table>
+
+
+
+        <h3>36x18</h3>
+        <table class="table table-striped">
+          <thead class="thead-inverse">
+            <tr>
+              <td>#</td>
+              <td>Name</td>
+              <td>Score</td>
+              <td>Date</td>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr ng-repeat="record in scoreData.mode3">
+              <td>{{$index + 1}}</td>
+              <td>{{record.playername}}</td>
+              <td>{{record.score}}</td>
+              <td>{{record.date | date: 'shortDate'}}</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <button type="button" ng-click="viewSettings()" class="btn btn-info btn-lg btn-block" style="display: 'block'; width: 100%">Settings</button>
+
+      </div>
+
 
     <!-- End crabSettings -->
     </div>
@@ -67,7 +149,7 @@
 
         <div id="clock">
           <h4>Time Left</h4>
-          <span class="scoreboardValue">{{gameData.timer.value}}s</span>
+          <span class="scoreboardValue">{{gameData.timer.value}}</span>
         </div>
 
         <div id="crabCount">
@@ -89,21 +171,38 @@
             ng-right-click="flagCrab($index)"
             ng-style="tile.style.background">
 
-            <img ng-if="tile.flagged" src="../images/flag2.png" alt="Flagged Crab" />
+            <img ng-if="tile.flagged" src="./images/flag2.png" alt="Flagged Crab" />
 
           <div ng-if="tile.revealed">
             <p ng-if="tile.type == 'Empty'" ng-style="tile.style">{{tile.surrounding}}</p>
-            <img ng-if="tile.type == 'Crab'" src="../images/crab_clipart.png" alt="Crab" />
+            <img ng-if="tile.type == 'Crab'" src="./images/crab_clipart.png" alt="Crab" />
           </div>
 
         </div>
       </div>
 
+      <div id="finalboard">
+        <h2>{{gameOver}}</h2>
+
+        <div id="scoreSubmitAlert" class="alert alert-success">{{checkedScoreMessage}}</div>
+
+        <div id="winnerNameIn" class="input-group">
+          <input type="text" placeholder="Your name here" ng-model="playerName">
+          <button class="btn btn-info" type="button" ng-click="submitHighScore()">Submit!</button>
+          <br><br>
+        </div>
+
+        <button type="button" class="btn btn-primary" ng-click="revealBoard()">Reveal Board</button>
+        <!-- <button type="button" class="btn btn-primary" ng-click="resetBoard()">Reset Board</button> -->
+        <button type="button" class="btn btn-primary" ng-click="goToSettings()">New Game</button>
+
+      </div>
+
     </div>
 
 
-    <script src="../vendors/angular.min.js" charset="utf-8"></script>
-    <script src="../scripts/script.js" charset="utf-8"></script>
+    <script src="./vendors/angular.min.js" charset="utf-8"></script>
+    <script src="./scripts/script.js" charset="utf-8"></script>
 
   </body>
 </html>

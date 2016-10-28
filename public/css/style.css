@@ -27,8 +27,8 @@ body {
 
 #crabSettings button {
   font-size: 3em;
-  width: 80%;
-  margin: auto;
+  width: 30%;
+  display: inline-block;
 }
 
 #customTimeIn, #customGridIn {
@@ -41,6 +41,7 @@ body {
   margin: auto;
   min-width: 900px;
   margin-bottom: 30vh;
+  text-align: center;
 }
 
 #scoreboard {
@@ -76,6 +77,10 @@ body {
   display: block;
 }
 
+#leaderboard {
+  display: none;
+}
+
 #gameBoard {
   margin: auto;
 }
@@ -100,4 +105,22 @@ body {
   height: auto;
   padding: 0px;
   margin: 0px;
+}
+
+#finalboard {
+  display: none;
+  margin-left: 5vw;
+  vertical-align: top;
+}
+
+#scoreSubmitAlert {
+  display: none;
+}
+
+#winnerNameIn {
+  display: none;
+}
+
+thead {
+  font-size: 1.5em;
 }
