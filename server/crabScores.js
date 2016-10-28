@@ -74,6 +74,36 @@ router.get('/stats', function(req, res){
 
 });
 
+
+router.put('/gamesPlayed', function(req, res){
+
+  pg.connect(connection, function(err, client, done){
+
+    var query = client.query("SELECT * FROM crabstats");
+    var result =[];
+
+    query.on('row', function(row){
+      result.push(row);
+    });
+
+    query.on('end', function(){
+
+      var newCount = result[0].playCount + 1;
+
+      query = client.query('UPDATE crabstats SET "playCount" = ' + newCount + ' WHERE id = 1');
+
+      done();
+      res.end();
+
+    });
+
+  });
+
+
+
+});
+
+
 router.post('/checkScores', function(req, res){
 
   console.log("In checkScores");
@@ -94,6 +124,11 @@ router.post('/checkScores', function(req, res){
 
 
   pg.connect(connection, function(err, client, done){
+
+    //Update winCount
+    var query2 = client.query('UPDATE crabstats SET "winCount" = "winCount" + 1');
+
+
     var query = client.query("SELECT id, score, date FROM " + selectedQuery + " ORDER BY score ASC, date DESC");
     var results = [];
 

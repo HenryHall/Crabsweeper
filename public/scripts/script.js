@@ -170,8 +170,14 @@ crabApp.controller('crabSettings', ['$scope', '$http', 'crabGrid', function($sco
 
     //Successful validation
     crabGrid.initializeGrid($scope.settings.span.x, $scope.settings.span.y, $scope.settings.crabCount, $scope.settings.timed);
-      document.getElementById('crabSweeper').style.display = "Block";
-      document.getElementById('crabSettings').style.display = "None";
+    document.getElementById('crabSweeper').style.display = "Block";
+    document.getElementById('crabSettings').style.display = "None";
+
+    //Update Games Played
+    $http({
+      method: 'PUT',
+      url: '/crabScores/gamesPlayed'
+    });
 
   };
 
