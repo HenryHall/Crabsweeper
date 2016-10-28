@@ -81,6 +81,11 @@ body {
   display: none;
 }
 
+#leaderboardTables {
+  width: 50%;
+  margin: auto;
+}
+
 #gameBoard {
   margin: auto;
 }

@@ -68,71 +68,74 @@
 
         <h2 style="text-align:center">Leaderboards</h2>
 
-        <h3>9x9</h3>
-        <table class="table table-striped">
-          <thead class="thead-inverse">
-            <tr>
-              <th>#</th>
-              <th>Name</th>
-              <th>Score</th>
-              <th>Date</th>
-            </tr>
-          </thead>
+        <div id="leaderboardTables">
+          <h3>9x9</h3>
+          <table class="table table-striped">
+            <thead class="thead-inverse">
+              <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Score</th>
+                <th>Date</th>
+              </tr>
+            </thead>
 
-          <tbody>
-            <tr ng-repeat="record in scoreData.mode1">
-              <td>{{$index + 1}}</td>
-              <td>{{record.playername}}</td>
-              <td>{{record.score}}</td>
-              <td>{{record.date  | date: 'shortDate'}}</td>
-            </tr>
-          </tbody>
-        </table>
-
-
-        <h3>18x18</h3>
-        <table class="table table-striped">
-          <thead class="thead-inverse">
-            <tr>
-              <td>#</td>
-              <td>Name</td>
-              <td>Score</td>
-              <td>Date</td>
-            </tr>
-          </thead>
-
-          <tbody>
-            <tr ng-repeat="record in scoreData.mode2">
-              <td>{{$index + 1}}</td>
-              <td>{{record.playername}}</td>
-              <td>{{record.score}}</td>
-              <td>{{record.date  | date: 'shortDate'}}</td>
-            </tr>
-          </tbody>
-        </table>
+            <tbody>
+              <tr ng-repeat="record in scoreData.mode1">
+                <td>{{$index + 1}}</td>
+                <td>{{record.playername}}</td>
+                <td>{{record.score}}</td>
+                <td>{{record.date  | date: 'shortDate'}}</td>
+              </tr>
+            </tbody>
+          </table>
 
 
+          <h3>18x18</h3>
+          <table class="table table-striped">
+            <thead class="thead-inverse">
+              <tr>
+                <td>#</td>
+                <td>Name</td>
+                <td>Score</td>
+                <td>Date</td>
+              </tr>
+            </thead>
 
-        <h3>36x18</h3>
-        <table class="table table-striped">
-          <thead class="thead-inverse">
-            <tr>
-              <td>#</td>
-              <td>Name</td>
-              <td>Score</td>
-              <td>Date</td>
-            </tr>
-          </thead>
+            <tbody>
+              <tr ng-repeat="record in scoreData.mode2">
+                <td>{{$index + 1}}</td>
+                <td>{{record.playername}}</td>
+                <td>{{record.score}}</td>
+                <td>{{record.date  | date: 'shortDate'}}</td>
+              </tr>
+            </tbody>
+          </table>
 
-          <tbody>
-            <tr ng-repeat="record in scoreData.mode3">
-              <td>{{$index + 1}}</td>
-              <td>{{record.playername}}</td>
-              <td>{{record.score}}</td>
-              <td>{{record.date | date: 'shortDate'}}</td>
-            </tr>
-          </tbody>
-        </table>
+
+
+          <h3>36x18</h3>
+          <table class="table table-striped">
+            <thead class="thead-inverse">
+              <tr>
+                <td>#</td>
+                <td>Name</td>
+                <td>Score</td>
+                <td>Date</td>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr ng-repeat="record in scoreData.mode3">
+                <td>{{$index + 1}}</td>
+                <td>{{record.playername}}</td>
+                <td>{{record.score}}</td>
+                <td>{{record.date | date: 'shortDate'}}</td>
+              </tr>
+            </tbody>
+          </table>
+
+        </div>
 
         <button type="button" ng-click="viewSettings()" class="btn btn-info btn-lg btn-block" style="display: 'block'; width: 100%">Settings</button>
 
