@@ -12,7 +12,7 @@ router.get('/scores', function(req, res){
   console.log("In /scores.get");
 
   pg.connect(connection, function(err, client, done){
-    var query = client.query("SELECT * FROM crabscores9x9 ORDER BY score ASC, date DESC");
+    var query = client.query("SELECT * FROM crabscores9x9 ORDER BY score ASC, date ASC");
     var results = {
       mode1: [],
       mode2: [],
@@ -25,7 +25,7 @@ router.get('/scores', function(req, res){
 
     query.on('end', function(){
 
-      var query = client.query("SELECT * FROM crabscores18x18 ORDER BY score ASC, date DESC");
+      var query = client.query("SELECT * FROM crabscores18x18 ORDER BY score ASC, date ASC");
 
       query.on('row', function(row){
         results.mode2.push(row);
@@ -33,7 +33,7 @@ router.get('/scores', function(req, res){
 
       query.on('end', function(){
 
-        var query = client.query("SELECT * FROM crabscores36x18 ORDER BY score ASC, date DESC");
+        var query = client.query("SELECT * FROM crabscores36x18 ORDER BY score ASC, date ASC");
 
         query.on('row', function(row){
           results.mode3.push(row);
@@ -129,7 +129,7 @@ router.post('/checkScores', function(req, res){
     var query2 = client.query('UPDATE crabstats SET "winCount" = "winCount" + 1');
 
 
-    var query = client.query("SELECT id, score, date FROM " + selectedQuery + " ORDER BY score ASC, date DESC");
+    var query = client.query("SELECT id, score, date FROM " + selectedQuery + " ORDER BY score ASC, date ASC");
     var results = [];
 
     query.on('row', function(row){
@@ -178,7 +178,7 @@ router.post('/submitScore', function(req, res){
     var query = client.query("INSERT INTO " + selectedQuery + " (score, playername) VALUES ($1, $2)", [req.body.score, req.body.playerName]);
 
     //Remove the lowest score
-    var query = client.query("SELECT id, score, date FROM " + selectedQuery + " ORDER BY score ASC, date DESC");
+    var query = client.query("SELECT id, score, date FROM " + selectedQuery + " ORDER BY score ASC, date ASC");
     var results = [];
 
     query.on('row', function(row){
