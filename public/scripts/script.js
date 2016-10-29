@@ -201,21 +201,24 @@ crabApp.controller('crabSettings', ['$scope', '$http', 'crabGrid', function($sco
 
 crabApp.service('crabGrid', ['$rootScope', function($rootScope){
 
-  var gridSettings = {
-    timer: {
-      type: undefined,
-      value: undefined
-    },
-    grid: {
-      x: undefined,
-      y: undefined,
-      crabs: undefined,
-      flagCount: undefined,
-      values: []
-    }
-  };
+  var gridSettings;
 
   var initializeGrid = function(gridX, gridY, crabCount, timer){
+
+
+    gridSettings = {
+      timer: {
+        type: undefined,
+        value: undefined
+      },
+      grid: {
+        x: undefined,
+        y: undefined,
+        crabs: undefined,
+        flagCount: undefined,
+        values: []
+      }
+    };
 
     //Creates a crab under a random tile
     var createCrab = function(){
@@ -549,7 +552,7 @@ crabApp.controller('crabSweeper', ['$scope', '$rootScope', '$http', 'crabGrid', 
     } else if ($scope.gameData.grid.x == 18 && $scope.gameData.grid.y == 18){
       var gameType = "18x18";
     } else if ($scope.gameData.grid.x == 36 && $scope.gameData.grid.y == 18){
-      var gameType = "36x19";
+      var gameType = "36x18";
     } else {
       var gameType = "Custom";
     }
@@ -662,8 +665,8 @@ crabApp.controller('crabSweeper', ['$scope', '$rootScope', '$http', 'crabGrid', 
     });
 
     document.getElementById('winnerNameIn').style.display = "none";
-    document.getElementById('winnerNameIn').classList.remove("alert-success");
-    document.getElementById('winnerNameIn').classList.add("alert-info");
+    document.getElementById('scoreSubmitAlert').classList.remove("alert-success");
+    document.getElementById('scoreSubmitAlert').classList.add("alert-info");
     $scope.checkedScoreMessage = "Head over to the leaderboards to see your name!"
 
   };
@@ -682,9 +685,10 @@ crabApp.controller('crabSweeper', ['$scope', '$rootScope', '$http', 'crabGrid', 
 
   $scope.resetBoard = function(){
 
-    console.log(crabGrid.retrieveGrid());
-    $scope.gameData = crabGrid.retrieveGrid();
-    console.log($scope.gameData);
+    //Reset the game with the same settings
+    crabGrid.initializeGrid($scope.gameData.grid.x, $scope.gameData.grid.y, $scope.gameData.grid.crabs, $scope.gameData.timer.type);
+    document.getElementById('finalboard').style.display = "none";
+    document.getElementById('gameBoard').style.display = "block";
 
   };
 

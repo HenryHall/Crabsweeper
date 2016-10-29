@@ -151,17 +151,17 @@
       <div id="scoreboard">
 
         <div id="clock">
-          <h4>Time Left</h4>
+          <h4>Time</h4>
           <span class="scoreboardValue">{{gameData.timer.value}}</span>
         </div>
 
         <div id="crabCount">
-          <h4>Total Crabs</h4>
+          <h4>Crabs</h4>
           <span class="scoreboardValue">{{gameData.grid.crabs}}</span>
         </div>
 
         <div id="flagCount">
-          <h4>Flags Left</h4>
+          <h4>Flags</h4>
           <span class="scoreboardValue">{{gameData.grid.flagCount}}</span>
         </div>
 
@@ -196,7 +196,7 @@
         </div>
 
         <button type="button" class="btn btn-primary" ng-click="revealBoard()">Reveal Board</button>
-        <!-- <button type="button" class="btn btn-primary" ng-click="resetBoard()">Reset Board</button> -->
+        <button type="button" class="btn btn-primary" ng-click="resetBoard()">Replay</button>
         <button type="button" class="btn btn-primary" ng-click="goToSettings()">New Game</button>
 
       </div>
