@@ -634,6 +634,26 @@ crabApp.controller('crabSweeper', ['$scope', '$rootScope', '$http', 'crabGrid', 
 
   $scope.submitHighScore = function(){
 
+    //Make sure the entered name isn't too long
+    if ($scope.playerName.length > 30){
+      document.getElementById('scoreSubmitAlert').classList.remove("alert-success");
+      document.getElementById('scoreSubmitAlert').classList.add("alert-warning");
+      $scope.checkedScoreMessage = "Please enter a name that is 30 characters or less!";
+      return;
+    }
+
+    //Make sure legal characters only
+    var charArray = ["!","@","#","$","%","^","&","*","(",")","+","=","/","|",";","'",'"'];
+
+    for (var i=0; i<charArray.length; i++){
+      if ($scope.playerName.indexOf(charArray[i]) != -1){
+        document.getElementById('scoreSubmitAlert').classList.remove("alert-success");
+        document.getElementById('scoreSubmitAlert').classList.add("alert-warning");
+        $scope.checkedScoreMessage = "Please do not use any special characters!";
+        return;
+      }
+    }
+
     //Check game mode
     console.log($scope.gameData);
     if ($scope.gameData.grid.x == 9 && $scope.gameData.grid.y == 9){
