@@ -710,6 +710,12 @@ crabApp.controller('crabSweeper', ['$scope', '$rootScope', '$http', 'crabGrid', 
     document.getElementById('finalboard').style.display = "none";
     document.getElementById('gameBoard').style.display = "block";
 
+    $scope.checkedScoreMessage = "";
+    document.getElementById('scoreSubmitAlert').classList.add("alert-info");
+    document.getElementById('scoreSubmitAlert').style.display = "none";
+    document.getElementById('winnerNameIn').style.display = "none";
+
+
   };
 
 
