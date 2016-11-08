@@ -173,11 +173,6 @@ crabApp.controller('crabSettings', ['$scope', '$http', 'crabGrid', function($sco
     document.getElementById('crabSweeper').style.display = "Block";
     document.getElementById('crabSettings').style.display = "None";
 
-    //Update Games Played
-    $http({
-      method: 'PUT',
-      url: '/crabScores/gamesPlayed'
-    });
 
   };
 
@@ -204,6 +199,13 @@ crabApp.service('crabGrid', ['$rootScope', function($rootScope){
   var gridSettings;
 
   var initializeGrid = function(gridX, gridY, crabCount, timer){
+
+
+    //Update Games Played
+    $http({
+      method: 'PUT',
+      url: '/crabScores/gamesPlayed'
+    });
 
 
     gridSettings = {
@@ -233,6 +235,14 @@ crabApp.service('crabGrid', ['$rootScope', function($rootScope){
         console.log("Repeat Crab");
         return createCrab();
       }
+
+      //create an array for random selection
+      // var crabArray = [];
+      // for(var i=0; i<gridSettings.grid.crabs; i++){
+      //   crabArray.push(i);
+      // }
+
+
     };
 
     //Returns the index of requested coordinates
@@ -601,7 +611,7 @@ crabApp.controller('crabSweeper', ['$scope', '$rootScope', '$http', 'crabGrid', 
               break;
             case 6:
               rank = "sixth";
-              breakl
+              break;
             case 7:
               rank = "seventh";
               break;
