@@ -1,6 +1,8 @@
 # Crabsweeper
 Minesweeper, but with crabs!
 
+https://crabsweeper.herokuapp.com/
+
 
 Crabsweeper is my take on a reversed engineered Microsoft classic, Minesweeper.
 It is full stack and was created using front-end frameworks AngularJS and Bootstrap with Node.js, Express and PostgreSQL for the back-end.
